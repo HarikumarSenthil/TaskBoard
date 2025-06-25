@@ -1,21 +1,60 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// src/App.tsx
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import BoardView from './Pages/BoardView';
-import BoardDetail from './Pages/BoardDetail';
-import Layout from './layout/Layout';
-
+import BoardView from './Pages/BoardView'
+import BoardDetail from './Pages/BoardDetail'
+import Layout from './layout/Layout'
+import LoginPage from './components/authentication/LoginPage'
+import RegisterPage from './components/authentication/RegisterPage'
+import ProtectedRoute from './Authentication/ProtectedRoute'
+import PublicRoute from './Authentication/PublicRoute'
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<BoardView />} />
-          <Route path="/board/:boardId" element={<BoardDetail />} />
-        </Routes>
-      </Layout>
-    </BrowserRouter>
-  );
-};
+      <Routes>
+        {/* Public routes*/}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          }
+        />
 
-export default App;
+        {/* Protected routes*/}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <BoardView />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/board/:boardId"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <BoardDetail />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App

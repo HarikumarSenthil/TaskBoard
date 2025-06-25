@@ -1,4 +1,3 @@
-// src/components/common/FormError.tsx
 
 import React from 'react';
 
