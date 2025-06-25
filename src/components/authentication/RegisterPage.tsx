@@ -1,12 +1,10 @@
-// src/pages/RegisterPage.tsx
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import toast, { Toaster } from 'react-hot-toast'
 import FormError from '../common/FormError'
 import { Eye, EyeOff } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import LoadingSpinner from '../common/LoadingSpinner'
 
 interface RegisterFormInputs {
@@ -26,48 +24,49 @@ const RegisterPage: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
   const togglePassword = () => setShowPassword(prev => !prev)
-  const navigate = useNavigate()
-const onSubmit = async (data: RegisterFormInputs) => {
-  setLoading(true)
-  try {
-    await axios.post(
-      'https://authentication-1-56tm.onrender.com/api/auth/register',
-      data
-    )
-    toast.success('Registration successful! Redirecting to login...', {
-      duration: 3000,
-      position: 'top-center',
-    })
 
-    setTimeout(() => {
-      navigate('/login')
-    }, 3000)
-  } catch (err: any) {
-    const message = err?.response?.data?.message || 'Registration failed'
-    setError('username', { message })
-  } finally {
-    setLoading(false)
+  const onSubmit = async (data: RegisterFormInputs) => {
+    setLoading(true)
+    try {
+      await axios.post('https://authentication-1-56tm.onrender.com/api/auth/register', data)
+      toast.success('Registration successful! Redirecting to login...', {
+        duration: 3000,
+        position: 'top-center',
+      })
+
+      setTimeout(() => {
+        navigate('/login')
+      }, 3000)
+    } catch (err: any) {
+      const message = err?.response?.data?.message || 'Registration failed'
+      setError('username', { message })
+    } finally {
+      setLoading(false)
+    }
   }
-}
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <Toaster />
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-<h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-  New Here? Create an account to manage your tasks
-</h2>
-
+        <h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+          New Here? Create an account to manage your tasks
+        </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Username */}
           <div>
-            <label className="block text-gray-600">Username</label>
+            <label className="block text-gray-600 mb-1">Username</label>
             <input
               type="text"
-              className="w-full px-4 py-2 border-black text-black bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-4 py-2 text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 ${
+                errors.username
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border border-gray-300 focus:ring-green-500'
+              }`}
               {...register('username', {
                 required: 'Username is required',
                 minLength: { value: 3, message: 'Min 3 characters' },
@@ -76,11 +75,16 @@ const onSubmit = async (data: RegisterFormInputs) => {
             <FormError message={errors.username?.message} />
           </div>
 
+          {/* Full Name */}
           <div>
-            <label className="block text-gray-600">Full Name</label>
+            <label className="block text-gray-600 mb-1">Full Name</label>
             <input
               type="text"
-              className="w-full px-4 py-2 border-black text-black bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-4 py-2 text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 ${
+                errors.full_name
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border border-gray-300 focus:ring-green-500'
+              }`}
               {...register('full_name', {
                 required: 'Full name is required',
               })}
@@ -88,11 +92,16 @@ const onSubmit = async (data: RegisterFormInputs) => {
             <FormError message={errors.full_name?.message} />
           </div>
 
+          {/* Email */}
           <div>
-            <label className="block text-gray-600">Email</label>
+            <label className="block text-gray-600 mb-1">Email</label>
             <input
               type="email"
-              className="w-full px-4 py-2 border-black text-black bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-4 py-2 text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 ${
+                errors.email
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border border-gray-300 focus:ring-green-500'
+              }`}
               {...register('email', {
                 required: 'Email is required',
                 pattern: {
@@ -104,12 +113,17 @@ const onSubmit = async (data: RegisterFormInputs) => {
             <FormError message={errors.email?.message} />
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block text-gray-600">Password</label>
+            <label className="block text-gray-600 mb-1">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                className="w-full px-4 py-2 pr-10 border-black text-black bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-4 py-2 pr-10 text-black bg-gray-100 rounded-lg focus:outline-none focus:ring-2 ${
+                  errors.password
+                    ? 'border-red-500 focus:ring-red-500'
+                    : 'border border-gray-300 focus:ring-green-500'
+                }`}
                 {...register('password', {
                   required: 'Password is required',
                   minLength: {
@@ -128,26 +142,28 @@ const onSubmit = async (data: RegisterFormInputs) => {
             <FormError message={errors.password?.message} />
           </div>
 
+          {/* Submit Button */}
           <button
-  type="submit"
-  disabled={loading}
-  className={`w-full py-2 px-6 rounded-lg flex justify-center items-center gap-2 ${
-    loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
-  } text-white font-medium`}
->
-  Sign Up
-  {loading && <LoadingSpinner />}
-</button>
-
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 px-6 rounded-lg flex justify-center items-center gap-2 ${
+              loading
+                ? 'bg-green-400 cursor-not-allowed'
+                : 'bg-green-600 hover:bg-green-700'
+            } text-white font-medium`}
+          >
+            Sign Up
+            {loading && <LoadingSpinner />}
+          </button>
         </form>
-        <div className="mt-4 text-center">
-  <span className="text-gray-600">Already have an account? </span>
- <Link to="/login" className="text-blue-600 hover:underline font-medium">
-    Sign In
-  </Link>
- 
-</div>
 
+        {/* Footer Link */}
+        <div className="mt-4 text-center">
+          <span className="text-gray-600">Already have an account? </span>
+          <Link to="/login" className="text-blue-600 hover:underline font-medium">
+            Sign In
+          </Link>
+        </div>
       </div>
     </div>
   )
