@@ -48,20 +48,7 @@ const BoardDetail: React.FC = () => {
     setColumns(updatedColumns);
   };
 
-  const handleCreateTask = (task: Omit<Task, 'id' | 'columnId' | 'order'>) => {
-    const columnTasks = tasks.filter(t => t.columnId === selectedColumnId);
-    const newTask: Task = {
-      ...task,
-      id: Date.now().toString(),
-      columnId: selectedColumnId,
-      order: columnTasks.length,
-    };
 
-    const updatedTasks = [...tasks, newTask];
-    const allTasks = loadFromLocalStorage<Task[]>('tasks') || [];
-    saveToLocalStorage('tasks', [...allTasks, newTask]);
-    setTasks(updatedTasks);
-  };
   const handleSaveTask = (taskData: Omit<Task, 'id' | 'columnId' | 'order'>) => {
   if (editingTask) {
     // Editing existing task
