@@ -5,7 +5,7 @@ import TaskCard from '../task/TaskCard';
 import ColumnHeader from './ColumnHeader';
 import TaskModal from '../task/TaskModal';
 import type { Task, ColumnType } from '../../store/types';
-import { Filter, User, ArrowDownWideNarrow, ChevronDown } from 'lucide-react';
+import { Filter, User, ArrowDownWideNarrow, ChevronDown ,FileQuestion } from 'lucide-react';
 
 interface Props {
   column: ColumnType;
@@ -136,18 +136,26 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEdi
       )}
 
       <SortableContext items={filteredSortedTasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-        <div className="mt-4 space-y-3 overflow-visible">
-          {filteredSortedTasks.map(task => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onCardClick={() => handleCardClick(task)}
-            />
-          ))}
-        </div>
-      </SortableContext>
+  <div className="mt-4 space-y-3 overflow-visible">
+    {filteredSortedTasks.length > 0 ? (
+      filteredSortedTasks.map(task => (
+        <TaskCard
+          key={task.id}
+          task={task}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onCardClick={() => handleCardClick(task)}
+        />
+      ))
+    ) : (
+      <div className="flex flex-col items-center justify-center text-gray-500 text-sm mt-6">
+        <FileQuestion className="w-8 h-8 mb-2 text-gray-400" />
+        <p>No tasks available</p>
+      </div>
+   )}
+  </div>
+</SortableContext>
+
 
       {selectedTask && (
         <TaskModal

@@ -34,7 +34,7 @@ const Header: React.FC = () => {
           </Link>
 
           {token && (
-            <div className="relative">
+            <div className="relative cursor-pointer">
               <a
                 onClick={() => setShowProfile(prev => !prev)}
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-800 font-medium hover:text-blue-600 focus:outline-none"
@@ -44,7 +44,7 @@ const Header: React.FC = () => {
               </a>
 
               {showProfile && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10 cursor-pointer">
                   <p
                     onClick={handleLogout}
                     className="w-full bg-gray-200 rounded-md flex items-center gap-2 px-4 py-2 text-sm text-red-600"

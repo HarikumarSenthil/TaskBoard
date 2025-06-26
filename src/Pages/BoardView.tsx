@@ -50,7 +50,7 @@ const BoardView: React.FC = () => {
               placeholder="Search boards"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-5 py-3 text-gray-800 border rounded-md w-[400px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="pl-9 pr-5 py-3 text-gray-800 border rounded-md md:w-[400px] w-[320px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
         </label>

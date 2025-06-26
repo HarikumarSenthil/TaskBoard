@@ -106,7 +106,6 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate, task }) =
       {[
         { name: 'title', label: 'Title', type: 'text', placeholder: 'Enter task title' },
         { name: 'createdBy', label: 'Created by', type: 'text', placeholder: 'Name of creator' },
-        { name: 'assignedTo', label: 'Assigned to', type: 'text', placeholder: 'Assign to someone' },
       ].map(field => (
         <label key={field.name} className="block">
           <span className="block text-sm font-semibold text-gray-700 mb-1">{field.label}</span>
@@ -124,6 +123,29 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate, task }) =
         </label>
       ))}
 
+
+      {/* Assigned To */}
+<label className="block">
+  <span className="block text-sm font-semibold text-gray-700 mb-1">Assigned To</span>
+  <select
+    name="assignedTo"
+    value={form.assignedTo}
+    onChange={handleChange}
+    className={`w-full px-4 py-2 border text-black ${
+      errors.assignedTo ? 'border-red-500' : 'border-gray-300'
+    } rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+  >
+    <option value="">Select a user</option>
+    {['Harikumar', 'Jayakumar', 'Suresh', 'Vikash', 'Vimal', 'Suriya', 'Ramkrishnan'].map(user => (
+      <option key={user} value={user}>
+        {user}
+      </option>
+    ))}
+  </select>
+  <FormError message={errors.assignedTo} />
+</label>
+
+
       {/* Description */}
       <label className="block">
         <span className="block text-sm font-semibold text-gray-700 mb-1">Description</span>
@@ -132,7 +154,7 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate, task }) =
           value={form.description}
           onChange={handleChange}
           placeholder="Add task description"
-          rows={3}
+          rows={4}
           className={`w-full px-4 py-2 text-black border ${
             errors.description ? 'border-red-500' : 'border-gray-300'
           } rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
@@ -157,6 +179,7 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate, task }) =
 
       {/* Due Date */}
       <div className="relative cursor-pointer">
+          <span className="block text-sm font-semibold text-gray-700 mb-1">Due Date</span>
         <input
           type="date"
           name="dueDate"
@@ -167,7 +190,7 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate, task }) =
           } rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
         />
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
-          <Calendar className='cursor-pointer' />
+          <Calendar className='cursor-pointer mt-5' />
         </div>
         <FormError message={errors.dueDate} />
       </div>
