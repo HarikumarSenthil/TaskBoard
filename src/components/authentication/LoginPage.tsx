@@ -1,21 +1,21 @@
 // src/pages/LoginPage.tsx
-import React, { useState } from 'react'
-import axios from 'axios'
-import Cookies from 'js-cookie'
-import { useForm } from 'react-hook-form'
-import { useNavigate, Link } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast'
-import FormError from '../common/FormError'
-import { Eye, EyeOff } from 'lucide-react'
-import LoadingSpinner from '../common/LoadingSpinner'
+import React, { useState } from 'react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { useForm } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import FormError from '../common/FormError';
+import { Eye, EyeOff } from 'lucide-react';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 interface LoginFormInputs {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 interface LoginResponse {
-  token: string
+  token: string;
 }
 
 const LoginPage: React.FC = () => {
@@ -24,42 +24,42 @@ const LoginPage: React.FC = () => {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<LoginFormInputs>()
+  } = useForm<LoginFormInputs>();
 
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev)
-  }
+    setShowPassword((prev) => !prev);
+  };
 
   const onSubmit = async (data: LoginFormInputs) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await axios.post<LoginResponse>(
         'https://authentication-1-56tm.onrender.com/api/auth/login',
         data
-      )
-      const token = response.data.token
-      Cookies.set('jwtToken', token, { expires: 7 })
+      );
+      const token = response.data.token;
+      Cookies.set('jwtToken', token, { expires: 7 });
 
       toast.success('Login successful! Redirecting...', {
         duration: 2000,
         position: 'top-center',
-      })
+      });
 
       setTimeout(() => {
-        navigate('/')
-      }, 2000)
+        navigate('/');
+      }, 2000);
     } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || 'Invalid credentials'
-      setError('email', { message: errorMessage })
+      const errorMessage = err?.response?.data?.message || 'Invalid credentials';
+      setError('email', { message: errorMessage });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -79,9 +79,10 @@ const LoginPage: React.FC = () => {
               id="email"
               type="email"
               className={`w-full px-4 py-2 pr-10 border text-black bg-gray-100 rounded-md focus:outline-none focus:ring-2 ${
-              errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-            } text-black`}
-
+                errors.email
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 focus:ring-blue-500'
+              } text-black`}
               {...register('email', {
                 required: 'Email is required',
                 pattern: {
@@ -145,7 +146,7 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

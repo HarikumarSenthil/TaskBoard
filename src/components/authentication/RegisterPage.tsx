@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import { useForm } from 'react-hook-form'
-import { useNavigate, Link } from 'react-router-dom'
-import toast, { Toaster } from 'react-hot-toast'
-import FormError from '../common/FormError'
-import { Eye, EyeOff } from 'lucide-react'
-import LoadingSpinner from '../common/LoadingSpinner'
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
+import FormError from '../common/FormError';
+import { Eye, EyeOff } from 'lucide-react';
+import LoadingSpinner from '../common/LoadingSpinner';
 
 interface RegisterFormInputs {
-  username: string
-  full_name: string
-  email: string
-  password: string
+  username: string;
+  full_name: string;
+  email: string;
+  password: string;
 }
 
 const RegisterPage: React.FC = () => {
@@ -20,33 +20,33 @@ const RegisterPage: React.FC = () => {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<RegisterFormInputs>()
+  } = useForm<RegisterFormInputs>();
 
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const togglePassword = () => setShowPassword(prev => !prev)
+  const togglePassword = () => setShowPassword((prev) => !prev);
 
   const onSubmit = async (data: RegisterFormInputs) => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await axios.post('https://authentication-1-56tm.onrender.com/api/auth/register', data)
+      await axios.post('https://authentication-1-56tm.onrender.com/api/auth/register', data);
       toast.success('Registration successful! Redirecting to login...', {
         duration: 3000,
         position: 'top-center',
-      })
+      });
 
       setTimeout(() => {
-        navigate('/login')
-      }, 3000)
+        navigate('/login');
+      }, 3000);
     } catch (err: any) {
-      const message = err?.response?.data?.message || 'Registration failed'
-      setError('username', { message })
+      const message = err?.response?.data?.message || 'Registration failed';
+      setError('username', { message });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -147,9 +147,7 @@ const RegisterPage: React.FC = () => {
             type="submit"
             disabled={loading}
             className={`w-full py-2 px-6 rounded-lg flex justify-center items-center gap-2 ${
-              loading
-                ? 'bg-green-400 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700'
+              loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
             } text-white font-medium`}
           >
             Sign Up
@@ -166,7 +164,7 @@ const RegisterPage: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RegisterPage
+export default RegisterPage;

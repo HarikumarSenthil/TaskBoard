@@ -5,18 +5,27 @@ import TaskCard from '../task/TaskCard';
 import ColumnHeader from './ColumnHeader';
 import TaskModal from '../task/TaskModal';
 import type { Task, ColumnType } from '../../store/types';
-import { Filter, User, ArrowDownWideNarrow, ChevronDown ,FileQuestion } from 'lucide-react';
+import { Filter, User, ArrowDownWideNarrow, ChevronDown, FileQuestion } from 'lucide-react';
 
 interface Props {
   column: ColumnType;
   tasks: Task[];
   onAddTask: () => void;
-  onEditTask: (task: Task) => void;       
-  onDeleteTask: (taskId: string) => void; 
+  onEditTask: (task: Task) => void;
+  onDeleteTask: (taskId: string) => void;
+  onEditColumn: (columnId: string) => void;
+  onDeleteColumn: (columnId: string) => void;
 }
 
-
-const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEditTask}) => {
+const Column: React.FC<Props> = ({
+  column,
+  tasks,
+  onAddTask,
+  onDeleteTask,
+  onEditTask,
+  onEditColumn,
+  onDeleteColumn,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [filterPriority, setFilterPriority] = useState<string>('');
@@ -35,12 +44,12 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEdi
 
   const handleEdit = (task: Task) => {
     setSelectedTask(task);
-    onEditTask(task); 
+    onEditTask(task);
     // setIsModalOpen(true);
   };
 
   const handleDelete = (taskId: string) => {
-    onDeleteTask(taskId); 
+    onDeleteTask(taskId);
   };
 
   const handleCloseModal = () => {
@@ -49,9 +58,10 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEdi
   };
 
   const filteredSortedTasks = tasks
-    .filter(task => {
+    .filter((task) => {
       if (filterPriority && task.priority !== filterPriority) return false;
-      if (filterAssignee && !task.assignedTo?.toLowerCase().includes(filterAssignee.toLowerCase())) return false;
+      if (filterAssignee && !task.assignedTo?.toLowerCase().includes(filterAssignee.toLowerCase()))
+        return false;
       return true;
     })
     .sort((a, b) => {
@@ -69,10 +79,17 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEdi
     <div
       ref={setNodeRef}
       className={`bg-gradient-to-b from-slate-50 to-slate-100 border border-slate-200 p-5 rounded-xl w-72 min-w-[280px] shadow-sm transition-all duration-300 ${
-        isOver ? 'border-2 border-blue-400 bg-gradient-to-b from-blue-50 to-blue-100 shadow-md scale-102' : ''
+        isOver
+          ? 'border-2 border-blue-400 bg-gradient-to-b from-blue-50 to-blue-100 shadow-md scale-102'
+          : ''
       }`}
     >
-      <ColumnHeader title={column.name} onAddTask={onAddTask} />
+      <ColumnHeader
+        title={column.name}
+        onAddTask={onAddTask}
+        onEditColumn={() => onEditColumn(column.id)}
+        onDeleteColumn={() => onDeleteColumn(column.id)}
+      />
 
       {/* Filter Toggle */}
       <a
@@ -83,7 +100,9 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEdi
           <Filter className="w-4 h-4 text-black" />
           <span className="text-sm font-medium text-slate-700">Filters & Sort</span>
         </div>
-        <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${filtersExpanded ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${filtersExpanded ? 'rotate-180' : ''}`}
+        />
       </a>
 
       {/* Filters Panel */}
@@ -135,34 +154,32 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEdi
         </div>
       )}
 
-      <SortableContext items={filteredSortedTasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-  <div className="mt-4 space-y-3 overflow-visible">
-    {filteredSortedTasks.length > 0 ? (
-      filteredSortedTasks.map(task => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onCardClick={() => handleCardClick(task)}
-        />
-      ))
-    ) : (
-      <div className="flex flex-col items-center justify-center text-gray-500 text-sm mt-6">
-        <FileQuestion className="w-8 h-8 mb-2 text-gray-400" />
-        <p>No tasks available</p>
-      </div>
-   )}
-  </div>
-</SortableContext>
-
+      <SortableContext
+        items={filteredSortedTasks.map((task) => task.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="mt-4 space-y-3 overflow-visible">
+          {filteredSortedTasks.length > 0 ? (
+            filteredSortedTasks.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onCardClick={() => handleCardClick(task)}
+              />
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center text-gray-500 text-sm mt-6">
+              <FileQuestion className="w-8 h-8 mb-2 text-gray-400 animate-bounce" />
+              <p>No tasks available</p>
+            </div>
+          )}
+        </div>
+      </SortableContext>
 
       {selectedTask && (
-        <TaskModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          task={selectedTask}
-        />
+        <TaskModal isOpen={isModalOpen} onClose={handleCloseModal} task={selectedTask} />
       )}
     </div>
   );

@@ -21,14 +21,12 @@ const BoardCard: React.FC<Props> = ({ board }) => {
         </div>
         <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all duration-200" />
       </div>
-      
+
       <div className="space-y-2">
         <h3 className="text-lg font-bold text-slate-800 group-hover:text-blue-800 transition-colors">
           {board.name}
         </h3>
-        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
-          {board.description}
-        </p>
+        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">{board.description}</p>
       </div>
       <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600/0 to-indigo-600/0 group-hover:from-blue-600/5 group-hover:to-indigo-600/5 transition-all duration-300" />
     </div>

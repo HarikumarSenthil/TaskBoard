@@ -1,19 +1,19 @@
 // src/layout/Header.tsx
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
-import { LogOut, User } from 'lucide-react'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { LogOut, User } from 'lucide-react';
 
 const Header: React.FC = () => {
-  const navigate = useNavigate()
-  const token = Cookies.get('jwtToken')
-  const [showProfile, setShowProfile] = useState(false)
+  const navigate = useNavigate();
+  const token = Cookies.get('jwtToken');
+  const [showProfile, setShowProfile] = useState(false);
 
   const handleLogout = () => {
-    Cookies.remove('jwtToken')
-    setShowProfile(false)
-    navigate('/login')
-  }
+    Cookies.remove('jwtToken');
+    setShowProfile(false);
+    navigate('/login');
+  };
 
   return (
     <header className="bg-gradient-to-r from-blue-50 via-white to-purple-50 shadow-lg border-b border-gray-200">
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
           {token && (
             <div className="relative cursor-pointer">
               <a
-                onClick={() => setShowProfile(prev => !prev)}
+                onClick={() => setShowProfile((prev) => !prev)}
                 className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-800 font-medium hover:text-blue-600 focus:outline-none"
               >
                 <User className="w-4 h-4" />
@@ -59,7 +59,7 @@ const Header: React.FC = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

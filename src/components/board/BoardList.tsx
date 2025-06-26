@@ -9,7 +9,7 @@ interface Props {
 }
 
 const BoardList: React.FC<Props> = ({ boards, searchTerm }) => {
-  const filteredBoards = boards.filter(board =>
+  const filteredBoards = boards.filter((board) =>
     board.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -24,7 +24,7 @@ const BoardList: React.FC<Props> = ({ boards, searchTerm }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {filteredBoards.map(board => (
+      {filteredBoards.map((board) => (
         <BoardCard key={board.id} board={board} />
       ))}
     </div>

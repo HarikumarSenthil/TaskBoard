@@ -33,10 +33,7 @@ const TaskCard: React.FC<Props> = ({ task, onEdit, onDelete, onCardClick }) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowMenu(false);
       }
     };
@@ -66,7 +63,12 @@ const TaskCard: React.FC<Props> = ({ task, onEdit, onDelete, onCardClick }) => {
       className="focus:outline-none focus:ring-0 bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-100 w-full h-40 flex flex-col justify-between"
       tabIndex={-1}
     >
-      <div ref={setActivatorNodeRef} {...attributes} {...listeners} onClick={() => onCardClick?.(task)}>
+      <div
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
+        onClick={() => onCardClick?.(task)}
+      >
         <div className="flex justify-between items-start mb-2">
           <h4 className="font-bold text-gray-800 text-sm sm:text-base truncate w-56">
             {task.title}
@@ -116,29 +118,24 @@ const TaskCard: React.FC<Props> = ({ task, onEdit, onDelete, onCardClick }) => {
               <Trash2 size={14} /> Delete
             </a>
             <a
-            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-            onClick={() => {
-              onCardClick?.(task);
-              setShowMenu(false);
-            }}
-          >
-            <View size={14} /> View
-          </a>
-
-
-
+              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              onClick={() => {
+                onCardClick?.(task);
+                setShowMenu(false);
+              }}
+            >
+              <View size={14} /> View
+            </a>
           </div>
         )}
       </div>
 
       <div className="mt-3 text-xs text-gray-500 space-y-1">
         <p className="truncate">
-          <span className="font-medium text-gray-700">Assigned:</span>{' '}
-          {task.assignedTo || 'None'}
+          <span className="font-medium text-gray-700">Assigned:</span> {task.assignedTo || 'None'}
         </p>
         <p className="truncate">
-          <span className="font-medium text-gray-700">Due:</span>{' '}
-          {task.dueDate || 'None'}
+          <span className="font-medium text-gray-700">Due:</span> {task.dueDate || 'None'}
         </p>
       </div>
     </div>

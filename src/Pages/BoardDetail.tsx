@@ -3,14 +3,13 @@ import { useParams } from 'react-router-dom';
 import { DndContext } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-
 import CreateColumnModal from '../components/column/CreateColumnModal';
 import CreateTaskModal from '../components/task/CreateTaskModal';
 import Column from '../components/column/Column';
 import Button from '../components/common/Button';
 import { loadFromLocalStorage, saveToLocalStorage } from '../utils/storage';
 import type { ColumnType, Task } from '../store/types';
-
+import ConfirmDialog from '../components/common/ConfirmDialog';
 const BoardDetail: React.FC = () => {
   const { boardId } = useParams<{ boardId: string }>();
   const [columns, setColumns] = useState<ColumnType[]>([]);
@@ -19,109 +18,150 @@ const BoardDetail: React.FC = () => {
   const [isColumnModalOpen, setColumnModalOpen] = useState(false);
   const [isTaskModalOpen, setTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-
+  const [editingColumn, setEditingColumn] = useState<ColumnType | null>(null);
+  const [confirmColumnId, setConfirmColumnId] = useState<string | null>(null); // ✅ New
 
   useEffect(() => {
     const allColumns = loadFromLocalStorage<ColumnType[]>('columns') || [];
     const allTasks = loadFromLocalStorage<Task[]>('tasks') || [];
 
-    setColumns(allColumns.filter(col => col.boardId === boardId));
+    setColumns(allColumns.filter((col) => col.boardId === boardId));
     setTasks(
-      allTasks.filter(task => {
-        const column = allColumns.find(col => col.id === task.columnId);
+      allTasks.filter((task) => {
+        const column = allColumns.find((col) => col.id === task.columnId);
         return column?.boardId === boardId;
       })
     );
   }, [boardId]);
 
   const handleCreateColumn = (name: string) => {
-    const newColumn: ColumnType = {
-      id: Date.now().toString(),
-      boardId: boardId || '',
-      name,
-    };
+    if (editingColumn) {
+      const updatedColumns = columns.map((col) =>
+        col.id === editingColumn.id ? { ...col, name } : col
+      );
 
-    const updatedColumns = [...columns, newColumn];
-    const allColumns = loadFromLocalStorage<ColumnType[]>('columns') || [];
-    saveToLocalStorage('columns', [...allColumns, newColumn]);
+      const allColumns = loadFromLocalStorage<ColumnType[]>('columns') || [];
+      const allUpdatedColumns = allColumns.map((col) =>
+        col.id === editingColumn.id ? { ...col, name } : col
+      );
 
-    setColumns(updatedColumns);
+      saveToLocalStorage('columns', allUpdatedColumns);
+      setColumns(updatedColumns);
+      setEditingColumn(null);
+    } else {
+      const newColumn: ColumnType = {
+        id: Date.now().toString(),
+        boardId: boardId || '',
+        name,
+      };
+
+      const updatedColumns = [...columns, newColumn];
+      const allColumns = loadFromLocalStorage<ColumnType[]>('columns') || [];
+      saveToLocalStorage('columns', [...allColumns, newColumn]);
+
+      setColumns(updatedColumns);
+    }
+
+    setColumnModalOpen(false);
   };
 
-
   const handleSaveTask = (taskData: Omit<Task, 'id' | 'columnId' | 'order'>) => {
-  if (editingTask) {
-    // Editing existing task
-    const updatedTasks = tasks.map(t =>
-      t.id === editingTask.id
-        ? { ...t, ...taskData }
-        : t
-    );
-    saveToLocalStorage('tasks', updatedTasks);
-    setTasks(updatedTasks);
-    setEditingTask(null); // clear edit state
-  } else {
-    // Creating new task
-    const columnTasks = tasks.filter(t => t.columnId === selectedColumnId);
-    const newTask: Task = {
-      ...taskData,
-      id: Date.now().toString(),
-      columnId: selectedColumnId,
-      order: columnTasks.length,
-    };
+    if (editingTask) {
+      const updatedTasks = tasks.map((t) => (t.id === editingTask.id ? { ...t, ...taskData } : t));
+      saveToLocalStorage('tasks', updatedTasks);
+      setTasks(updatedTasks);
+      setEditingTask(null);
+    } else {
+      const columnTasks = tasks.filter((t) => t.columnId === selectedColumnId);
+      const newTask: Task = {
+        ...taskData,
+        id: Date.now().toString(),
+        columnId: selectedColumnId,
+        order: columnTasks.length,
+      };
 
-    const updatedTasks = [...tasks, newTask];
+      const updatedTasks = [...tasks, newTask];
+      const allTasks = loadFromLocalStorage<Task[]>('tasks') || [];
+      saveToLocalStorage('tasks', [...allTasks, newTask]);
+      setTasks(updatedTasks);
+    }
+
+    setTaskModalOpen(false);
+  };
+
+  const handleEditColumn = (columnId: string) => {
+    const columnToEdit = columns.find((col) => col.id === columnId);
+    if (columnToEdit) {
+      setEditingColumn(columnToEdit);
+      setColumnModalOpen(true);
+    }
+  };
+
+  // ✅ Set up the confirmation instead of direct deletion
+  const handleDeleteColumn = (columnId: string) => {
+    setConfirmColumnId(columnId);
+  };
+
+  // ✅ Confirm dialog action
+  const confirmDelete = () => {
+    if (!confirmColumnId) return;
+
+    const updatedColumns = columns.filter((col) => col.id !== confirmColumnId);
+    const updatedTasks = tasks.filter((task) => task.columnId !== confirmColumnId);
+
+    const allColumns = loadFromLocalStorage<ColumnType[]>('columns') || [];
     const allTasks = loadFromLocalStorage<Task[]>('tasks') || [];
-    saveToLocalStorage('tasks', [...allTasks, newTask]);
+
+    const allUpdatedColumns = allColumns.filter((col) => col.id !== confirmColumnId);
+    const allUpdatedTasks = allTasks.filter((task) => task.columnId !== confirmColumnId);
+
+    saveToLocalStorage('columns', allUpdatedColumns);
+    saveToLocalStorage('tasks', allUpdatedTasks);
+
+    setColumns(updatedColumns);
     setTasks(updatedTasks);
-  }
+    setConfirmColumnId(null);
+  };
 
-  setTaskModalOpen(false); // Close modal after save
-};
-
+  const cancelDelete = () => {
+    setConfirmColumnId(null);
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const activeTask = tasks.find(t => t.id === active.id);
-    const overTask = tasks.find(t => t.id === over.id);
+    const activeTask = tasks.find((t) => t.id === active.id);
+    const overTask = tasks.find((t) => t.id === over.id);
 
     const activeColumnId = activeTask?.columnId;
-
-    // If over target is a column (not a task), get column id directly
-    const overColumnId =
-      overTask?.columnId || columns.find(col => col.id === over.id)?.id;
+    const overColumnId = overTask?.columnId || columns.find((col) => col.id === over.id)?.id;
 
     if (!activeTask || !activeColumnId || !overColumnId) return;
 
     if (activeColumnId === overColumnId) {
-      // Reorder in the same column
       const columnTasks = tasks
-        .filter(t => t.columnId === activeColumnId)
+        .filter((t) => t.columnId === activeColumnId)
         .sort((a, b) => a.order - b.order);
 
-      const oldIndex = columnTasks.findIndex(t => t.id === active.id);
-      const newIndex = columnTasks.findIndex(t => t.id === over.id);
+      const oldIndex = columnTasks.findIndex((t) => t.id === active.id);
+      const newIndex = columnTasks.findIndex((t) => t.id === over.id);
 
       const reorderedTasks = arrayMove(columnTasks, oldIndex, newIndex);
 
-      const updatedTasks = tasks.map(task => {
-        const reordered = reorderedTasks.find(t => t.id === task.id);
-        return reordered
-          ? { ...reordered, order: reorderedTasks.indexOf(reordered) }
-          : task;
+      const updatedTasks = tasks.map((task) => {
+        const reordered = reorderedTasks.find((t) => t.id === task.id);
+        return reordered ? { ...reordered, order: reorderedTasks.indexOf(reordered) } : task;
       });
 
       saveToLocalStorage('tasks', updatedTasks);
       setTasks(updatedTasks);
     } else {
-      // Move to another column
       const targetTasks = tasks
-        .filter(t => t.columnId === overColumnId)
+        .filter((t) => t.columnId === overColumnId)
         .sort((a, b) => a.order - b.order);
 
-      const updatedTasks = tasks.map(task => {
+      const updatedTasks = tasks.map((task) => {
         if (task.id === active.id) {
           return {
             ...task,
@@ -148,38 +188,38 @@ const BoardDetail: React.FC = () => {
 
       <DndContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {columns.map(column => {
+          {columns.map((column) => {
             const columnTasks = tasks
-              .filter(task => task.columnId === column.id)
+              .filter((task) => task.columnId === column.id)
               .sort((a, b) => a.order - b.order);
 
             return (
               <SortableContext
                 key={column.id}
-                items={columnTasks.map(task => task.id)}
+                items={columnTasks.map((task) => task.id)}
                 strategy={verticalListSortingStrategy}
               >
-              <Column
-              column={column}
-              tasks={columnTasks}
-              onAddTask={() => {
-                setSelectedColumnId(column.id);
-                setEditingTask(null); 
-                setTaskModalOpen(true);
-              }}
-              onEditTask={(task) => {
-                setSelectedColumnId(task.columnId); 
-                setEditingTask(task);
-                setTaskModalOpen(true);
-              }}
-              onDeleteTask={(taskId) => {
-                const updated = tasks.filter(task => task.id !== taskId);
-                setTasks(updated);
-                saveToLocalStorage('tasks', updated);
-              }}
-            />
-
-
+                <Column
+                  column={column}
+                  tasks={columnTasks}
+                  onAddTask={() => {
+                    setSelectedColumnId(column.id);
+                    setEditingTask(null);
+                    setTaskModalOpen(true);
+                  }}
+                  onEditTask={(task) => {
+                    setSelectedColumnId(task.columnId);
+                    setEditingTask(task);
+                    setTaskModalOpen(true);
+                  }}
+                  onDeleteTask={(taskId) => {
+                    const updated = tasks.filter((task) => task.id !== taskId);
+                    setTasks(updated);
+                    saveToLocalStorage('tasks', updated);
+                  }}
+                  onEditColumn={() => handleEditColumn(column.id)}
+                  onDeleteColumn={() => handleDeleteColumn(column.id)}
+                />
               </SortableContext>
             );
           })}
@@ -188,10 +228,15 @@ const BoardDetail: React.FC = () => {
 
       <CreateColumnModal
         isOpen={isColumnModalOpen}
-        onClose={() => setColumnModalOpen(false)}
+        onClose={() => {
+          setColumnModalOpen(false);
+          setEditingColumn(null);
+        }}
         onCreate={handleCreateColumn}
+        column={editingColumn}
       />
-        <CreateTaskModal
+
+      <CreateTaskModal
         isOpen={isTaskModalOpen}
         onClose={() => {
           setTaskModalOpen(false);
@@ -201,6 +246,13 @@ const BoardDetail: React.FC = () => {
         task={editingTask}
       />
 
+      {confirmColumnId && (
+        <ConfirmDialog
+          message="Are you sure you want to delete this column?"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+        />
+      )}
     </div>
   );
 };

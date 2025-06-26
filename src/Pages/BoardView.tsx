@@ -9,7 +9,7 @@ import type { Board } from '../store/types';
 const BoardView: React.FC = () => {
   const [boards, setBoards] = useState<Board[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(''); 
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const storedBoards = loadFromLocalStorage<Board[]>('boards');
@@ -37,25 +37,22 @@ const BoardView: React.FC = () => {
           <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-pink-500">
             Boards
           </h2>
-      
 
-        <label className="block text-sm font-extrabold text-gray-700 mb-1">
-          Search Boards
-          <div className="relative mt-1 max-w-md w-full">
-            <span className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-              <Search className="w-6 h-6 text-gray-500" />
-            </span>
-            <input
-              type="text"
-              placeholder="Search boards"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-5 py-3 text-gray-800 border rounded-md md:w-[400px] w-[320px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-        </label>
-
-
+          <label className="block text-sm font-extrabold text-gray-700 mb-1">
+            Search Boards
+            <div className="relative mt-1 max-w-md w-full">
+              <span className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                <Search className="w-6 h-6 text-gray-500" />
+              </span>
+              <input
+                type="text"
+                placeholder="Search boards"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 pr-5 py-3 text-gray-800 border rounded-md md:w-[400px] w-[320px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </label>
         </div>
 
         <Button onClick={() => setModalOpen(true)}>+ New Board</Button>
@@ -63,7 +60,7 @@ const BoardView: React.FC = () => {
 
       {/* Board List */}
       {boards.length > 0 ? (
-        <BoardList boards={boards} searchTerm={searchTerm} /> 
+        <BoardList boards={boards} searchTerm={searchTerm} />
       ) : (
         <p className="text-gray-500 text-sm italic">No boards created yet. Start by adding one!</p>
       )}

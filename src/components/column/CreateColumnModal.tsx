@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
-import FormError from '../common/FormError'; // Reusable error component
+import FormError from '../common/FormError';
+import type { ColumnType } from '../../store/types'; // Make sure this import matches your structure
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (name: string) => void;
+  column?: ColumnType | null;
 }
 
-const CreateColumnModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
+const CreateColumnModal: React.FC<Props> = ({ isOpen, onClose, onCreate, column }) => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+
+  // Prefill name when editing
+  useEffect(() => {
+    if (isOpen && column) {
+      setName(column.name);
+    } else if (isOpen) {
+      setName('');
+    }
+  }, [isOpen, column]);
 
   const handleSubmit = () => {
     if (!name.trim()) {
@@ -20,15 +31,16 @@ const CreateColumnModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
     }
 
     setError('');
-    onCreate(name);
-    setName('');
+    onCreate(name.trim());
     onClose();
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white p-6 w-full max-w-md mx-auto">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Create New Column</h2>
+      <div className="bg-white p-6 w-full max-w-md mx-auto rounded-md">
+        <h2 className="text-xl font-bold mb-4 text-gray-800">
+          {column ? 'Edit Column' : 'Create New Column'}
+        </h2>
 
         <div className="mb-6">
           <label htmlFor="column-name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -39,7 +51,7 @@ const CreateColumnModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
             type="text"
             placeholder="Enter column name"
             value={name}
-            onChange={e => {
+            onChange={(e) => {
               setName(e.target.value);
               if (error) setError('');
             }}
@@ -51,7 +63,7 @@ const CreateColumnModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
         </div>
 
         <div className="flex justify-end">
-          <Button onClick={handleSubmit}>Create</Button>
+          <Button onClick={handleSubmit}>{column ? 'Update' : 'Create'}</Button>
         </div>
       </div>
     </Modal>

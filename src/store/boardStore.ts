@@ -1,4 +1,4 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 import type { Board, ColumnType, Task } from './types';
 
 type Store = {
@@ -17,4 +17,4 @@ export const useBoardStore = create<Store>((set) => ({
   addBoard: (board) => set((state) => ({ boards: [...state.boards, board] })),
   addColumn: (column) => set((state) => ({ columns: [...state.columns, column] })),
   addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
-}))
+}));

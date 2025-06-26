@@ -1,21 +1,20 @@
 // src/components/authentication/PublicRoute.tsx
-import React from 'react'
-import { Navigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 interface PublicRouteProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
-  const token = Cookies.get('jwtToken')
-
+  const token = Cookies.get('jwtToken');
 
   if (token) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>
-}
+  return <>{children}</>;
+};
 
-export default PublicRoute
+export default PublicRoute;

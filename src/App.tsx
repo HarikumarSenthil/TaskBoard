@@ -1,14 +1,16 @@
 // src/App.tsx
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import BoardView from './Pages/BoardView'
-import BoardDetail from './Pages/BoardDetail'
-import Layout from './layout/Layout'
-import LoginPage from './components/authentication/LoginPage'
-import RegisterPage from './components/authentication/RegisterPage'
-import ProtectedRoute from './Authentication/ProtectedRoute'
-import PublicRoute from './Authentication/PublicRoute'
+import BoardView from './Pages/BoardView';
+import BoardDetail from './Pages/BoardDetail';
+import Layout from './layout/Layout';
+import LoginPage from './components/authentication/LoginPage';
+import RegisterPage from './components/authentication/RegisterPage';
+import ProtectedRoute from './Authentication/ProtectedRoute';
+import PublicRoute from './Authentication/PublicRoute';
+import NotFound from './layout/NotFound';
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -52,9 +54,20 @@ const App: React.FC = () => {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <NotFound />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
-  )
-}
+  );
+};
 
-export default App
+export default App;
