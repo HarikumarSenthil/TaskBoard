@@ -42,15 +42,15 @@ const BoardView: React.FC = () => {
         <label className="block text-sm font-extrabold text-gray-700 mb-1">
           Search Boards
           <div className="relative mt-1 max-w-md w-full">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="w-4 h-6 text-gray-500" />
+            <span className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+              <Search className="w-6 h-6 text-gray-500" />
             </span>
             <input
               type="text"
               placeholder="Search boards"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 text-black border rounded-md w-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="pl-9 pr-5 py-3 text-gray-800 border rounded-md w-[400px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
         </label>

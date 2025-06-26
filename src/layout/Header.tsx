@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
+import { LogOut, User } from 'lucide-react'
 
 const Header: React.FC = () => {
   const navigate = useNavigate()
@@ -34,26 +35,23 @@ const Header: React.FC = () => {
 
           {token && (
             <div className="relative">
-              <button
+              <a
                 onClick={() => setShowProfile(prev => !prev)}
-                className="px-3 py-2 rounded-md font-medium text-white"
+                className="flex items-center gap-2 px-3 py-2 rounded-md text-gray-800 font-medium hover:text-blue-600 focus:outline-none"
               >
-                Profile
-              </button>
+                <User className="w-4 h-4" />
+                <span>Profile</span>
+              </a>
 
-              {/* Profile Dropdown */}
               {showProfile && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10 p-2">
-                  <div className="p-4 text-sm text-gray-800">
-                    <p className="font-bold cursor-pointer">User Profile</p>
-                    {/* <p className="text-xs mt-1 text-gray-500 truncate">Token saved</p> */}
-                  </div>
-                  <button
+                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-10">
+                  <p
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 border-t"
+                    className="w-full bg-gray-200 rounded-md flex items-center gap-2 px-4 py-2 text-sm text-red-600"
                   >
+                    <LogOut className="w-4 h-4 text-red-600" />
                     Logout
-                  </button>
+                  </p>
                 </div>
               )}
             </div>

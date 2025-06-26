@@ -27,7 +27,7 @@ const CreateColumnModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
+      <div className="bg-white p-6 w-full max-w-md mx-auto">
         <h2 className="text-xl font-bold mb-4 text-gray-800">Create New Column</h2>
 
         <div className="mb-6">

@@ -11,7 +11,7 @@ interface Props {
 const TaskModal: React.FC<Props> = ({ isOpen, onClose, task }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl px-6 py-6 bg-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-xl border border-gray-200 space-y-4">
+      <div className="w-full max-w-md sm:max-w-lg md:max-w-xl px-6 py-6 bg-white bg-opacity-90 backdrop-blur-sm border-gray-200 space-y-4">
         {/* Title */}
         <h2 className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
           {task.title}

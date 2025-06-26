@@ -78,7 +78,7 @@ const LoginPage: React.FC = () => {
             <input
               id="email"
               type="email"
-              className={`w-full px-4 py-2 rounded-md bg-gray-100 focus:outline-none focus:ring-2 ${
+              className={`w-full px-4 py-2 pr-10 border text-black bg-gray-100 rounded-md focus:outline-none focus:ring-2 ${
               errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
             } text-black`}
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import { Calendar } from 'lucide-react';
@@ -8,8 +9,10 @@ import FormError from '../common/FormError';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (task: Omit<Task, 'id' | 'columnId'>) => void;
+  onCreate: (taskData: Omit<Task, 'id' | 'columnId' | 'order'>) => void;
+  task?: Task | null;
 }
+
 
 type Task = {
   title: string;
@@ -20,7 +23,7 @@ type Task = {
   dueDate: string;
 };
 
-const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
+const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate, task }) => {
   const [form, setForm] = useState<Task>({
     title: '',
     description: '',
@@ -37,7 +40,7 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
   ) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-    setErrors(prev => ({ ...prev, [name]: '' })); // Clear error on change
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const validateForm = () => {
@@ -49,6 +52,29 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
     if (!form.dueDate.trim()) newErrors.dueDate = 'Due date is required';
     return newErrors;
   };
+  useEffect(() => {
+  if (task) {
+    setForm({
+      title: task.title || '',
+      description: task.description || '',
+      createdBy: task.createdBy || '',
+      assignedTo: task.assignedTo || '',
+      priority: task.priority || 'medium',
+      dueDate: task.dueDate || ''
+    });
+  } else {
+    // Reset form when task is null (i.e., creating new task)
+    setForm({
+      title: '',
+      description: '',
+      createdBy: '',
+      assignedTo: '',
+      priority: 'medium',
+      dueDate: ''
+    });
+  }
+}, [task]);
+
 
   const handleSubmit = () => {
     const validationErrors = validateForm();
@@ -73,12 +99,10 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
 
  return (
   <Modal isOpen={isOpen} onClose={onClose}>
-    <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl bg-white rounded-2xl shadow-2xl border border-gray-200 px-6 py-8 space-y-5 overflow-y-auto max-h-[90vh] backdrop-blur-md bg-opacity-90">
-      <h2 className="text-3xl text-black sm:text-4xl font-extrabold text-center mb-4">
-        Create Task
-      </h2>
-
-      {/* Reusable Input Fields */}
+    <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl bg-white px-6 py-8 space-y-5 overflow-auto max-h-[90vh] backdrop-blur-md bg-opacity-90">
+    <h2 className="text-3xl text-black sm:text-4xl font-extrabold text-center mb-4">
+      {task ? 'Edit Task' : 'Create Task'}
+    </h2>
       {[
         { name: 'title', label: 'Title', type: 'text', placeholder: 'Enter task title' },
         { name: 'createdBy', label: 'Created by', type: 'text', placeholder: 'Name of creator' },
@@ -143,7 +167,7 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
           } rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
         />
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
-          <Calendar className='mb-6 cursor-pointer' />
+          <Calendar className='cursor-pointer' />
         </div>
         <FormError message={errors.dueDate} />
       </div>
@@ -156,7 +180,9 @@ const CreateTaskModal: React.FC<Props> = ({ isOpen, onClose, onCreate }) => {
         >
           Cancel
         </button>
-        <Button onClick={handleSubmit}>Create Task</Button>
+        <Button onClick={handleSubmit}>
+        {task ? 'Save Changes' : 'Create Task'}
+      </Button>
       </div>
     </div>
   </Modal>

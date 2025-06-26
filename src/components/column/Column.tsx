@@ -5,21 +5,24 @@ import TaskCard from '../task/TaskCard';
 import ColumnHeader from './ColumnHeader';
 import TaskModal from '../task/TaskModal';
 import type { Task, ColumnType } from '../../store/types';
-import { Filter, User, ArrowDownWideNarrow } from 'lucide-react';
+import { Filter, User, ArrowDownWideNarrow, ChevronDown } from 'lucide-react';
 
 interface Props {
   column: ColumnType;
   tasks: Task[];
   onAddTask: () => void;
-  onMoveTask: (taskId: string, targetColumnId: string) => void;
+  onEditTask: (task: Task) => void;       
+  onDeleteTask: (taskId: string) => void; 
 }
 
-const Column: React.FC<Props> = ({ column, tasks, onAddTask }) => {
+
+const Column: React.FC<Props> = ({ column, tasks, onAddTask , onDeleteTask,onEditTask}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [filterPriority, setFilterPriority] = useState<string>('');
   const [filterAssignee, setFilterAssignee] = useState<string>('');
   const [sortBy, setSortBy] = useState<'priority' | 'dueDate' | ''>('');
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
@@ -32,12 +35,12 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask }) => {
 
   const handleEdit = (task: Task) => {
     setSelectedTask(task);
-    setIsModalOpen(true);
+    onEditTask(task); 
+    // setIsModalOpen(true);
   };
 
   const handleDelete = (taskId: string) => {
-    // Replace with actual logic or callback from props
-    console.log('Delete task:', taskId);
+    onDeleteTask(taskId); 
   };
 
   const handleCloseModal = () => {
@@ -65,19 +68,33 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask }) => {
   return (
     <div
       ref={setNodeRef}
-      className={`bg-gray-100 p-4 rounded w-72 min-w-[280px] transition-colors ${
-        isOver ? 'border-2 border-blue-400 bg-blue-50' : 'border-2 border-transparent'
+      className={`bg-gradient-to-b from-slate-50 to-slate-100 border border-slate-200 p-5 rounded-xl w-72 min-w-[280px] shadow-sm transition-all duration-300 ${
+        isOver ? 'border-2 border-blue-400 bg-gradient-to-b from-blue-50 to-blue-100 shadow-md scale-102' : ''
       }`}
     >
       <ColumnHeader title={column.name} onAddTask={onAddTask} />
 
-      {/* Filters */}
-      <div className="flex flex-col gap-2 mb-3 mt-3">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-600" />
+      {/* Filter Toggle */}
+      <a
+        onClick={() => setFiltersExpanded(!filtersExpanded)}
+        className="flex items-center justify-between w-full mt-4 p-2 rounded-lg bg-white/70 hover:bg-white/90 border border-slate-200 transition-all duration-200 group"
+      >
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-black" />
+          <span className="text-sm font-medium text-slate-700">Filters & Sort</span>
+        </div>
+        <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${filtersExpanded ? 'rotate-180' : ''}`} />
+      </a>
+
+      {/* Filters Panel */}
+      {filtersExpanded && (
+        <div className="mt-3 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-slate-200 space-y-3 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 rounded-md bg-gradient-to-r from-blue-500 to-indigo-600">
+              <Filter className="w-3 h-3 text-white" />
+            </div>
             <select
-              className="text-sm border text-black border-gray-300 px-3 py-1.5 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-sm bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
             >
@@ -88,21 +105,25 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask }) => {
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-black" />
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 rounded-md bg-gradient-to-r from-emerald-500 to-teal-600">
+              <User className="w-3 h-3 text-white" />
+            </div>
             <input
               type="text"
               placeholder="Search by assignee"
               value={filterAssignee}
               onChange={(e) => setFilterAssignee(e.target.value)}
-              className="text-sm border text-black border-gray-300 px-3 py-1.5 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-sm bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all placeholder:text-slate-400"
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <ArrowDownWideNarrow className="w-4 h-4 text-gray-600" />
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 rounded-md bg-gradient-to-r from-purple-500 to-violet-600">
+              <ArrowDownWideNarrow className="w-3 h-3 text-white" />
+            </div>
             <select
-              className="text-sm text-black border border-gray-300 px-3 py-1.5 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-sm bg-white border border-slate-300 text-slate-700 px-3 py-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'priority' | 'dueDate' | '')}
             >
@@ -112,7 +133,7 @@ const Column: React.FC<Props> = ({ column, tasks, onAddTask }) => {
             </select>
           </div>
         </div>
-      </div>
+      )}
 
       <SortableContext items={filteredSortedTasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
         <div className="mt-4 space-y-3 overflow-visible">

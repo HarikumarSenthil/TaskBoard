@@ -18,6 +18,8 @@ const BoardDetail: React.FC = () => {
   const [selectedColumnId, setSelectedColumnId] = useState<string>('');
   const [isColumnModalOpen, setColumnModalOpen] = useState(false);
   const [isTaskModalOpen, setTaskModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+
 
   useEffect(() => {
     const allColumns = loadFromLocalStorage<ColumnType[]>('columns') || [];
@@ -60,6 +62,36 @@ const BoardDetail: React.FC = () => {
     saveToLocalStorage('tasks', [...allTasks, newTask]);
     setTasks(updatedTasks);
   };
+  const handleSaveTask = (taskData: Omit<Task, 'id' | 'columnId' | 'order'>) => {
+  if (editingTask) {
+    // Editing existing task
+    const updatedTasks = tasks.map(t =>
+      t.id === editingTask.id
+        ? { ...t, ...taskData }
+        : t
+    );
+    saveToLocalStorage('tasks', updatedTasks);
+    setTasks(updatedTasks);
+    setEditingTask(null); // clear edit state
+  } else {
+    // Creating new task
+    const columnTasks = tasks.filter(t => t.columnId === selectedColumnId);
+    const newTask: Task = {
+      ...taskData,
+      id: Date.now().toString(),
+      columnId: selectedColumnId,
+      order: columnTasks.length,
+    };
+
+    const updatedTasks = [...tasks, newTask];
+    const allTasks = loadFromLocalStorage<Task[]>('tasks') || [];
+    saveToLocalStorage('tasks', [...allTasks, newTask]);
+    setTasks(updatedTasks);
+  }
+
+  setTaskModalOpen(false); // Close modal after save
+};
+
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -140,15 +172,27 @@ const BoardDetail: React.FC = () => {
                 items={columnTasks.map(task => task.id)}
                 strategy={verticalListSortingStrategy}
               >
-                <Column
-                  column={column}
-                  tasks={columnTasks}
-                  onAddTask={() => {
-                    setSelectedColumnId(column.id);
-                    setTaskModalOpen(true);
-                  }}
-                  onMoveTask={() => {}}
-                />
+              <Column
+              column={column}
+              tasks={columnTasks}
+              onAddTask={() => {
+                setSelectedColumnId(column.id);
+                setEditingTask(null); 
+                setTaskModalOpen(true);
+              }}
+              onEditTask={(task) => {
+                setSelectedColumnId(task.columnId); 
+                setEditingTask(task);
+                setTaskModalOpen(true);
+              }}
+              onDeleteTask={(taskId) => {
+                const updated = tasks.filter(task => task.id !== taskId);
+                setTasks(updated);
+                saveToLocalStorage('tasks', updated);
+              }}
+            />
+
+
               </SortableContext>
             );
           })}
@@ -160,11 +204,16 @@ const BoardDetail: React.FC = () => {
         onClose={() => setColumnModalOpen(false)}
         onCreate={handleCreateColumn}
       />
-      <CreateTaskModal
+        <CreateTaskModal
         isOpen={isTaskModalOpen}
-        onClose={() => setTaskModalOpen(false)}
-        onCreate={handleCreateTask}
+        onClose={() => {
+          setTaskModalOpen(false);
+          setEditingTask(null);
+        }}
+        onCreate={handleSaveTask}
+        task={editingTask}
       />
+
     </div>
   );
 };

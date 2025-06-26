@@ -63,7 +63,7 @@ const TaskCard: React.FC<Props> = ({ task, onEdit, onDelete, onCardClick }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className="focus:outline-none focus:ring-0 bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-100 w-72 h-40 flex flex-col justify-between"
+      className="focus:outline-none focus:ring-0 bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-100 w-full h-40 flex flex-col justify-between"
       tabIndex={-1}
     >
       <div ref={setActivatorNodeRef} {...attributes} {...listeners} onClick={() => onCardClick?.(task)}>
@@ -94,7 +94,7 @@ const TaskCard: React.FC<Props> = ({ task, onEdit, onDelete, onCardClick }) => {
 
         {showMenu && (
           <div
-            className="absolute right-0 mt-6 w-32 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50"
+            className="absolute right-0 top-10 mt-6 w-32 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50"
             onClick={(e) => e.stopPropagation()}
           >
             <a
@@ -116,14 +116,15 @@ const TaskCard: React.FC<Props> = ({ task, onEdit, onDelete, onCardClick }) => {
               <Trash2 size={14} /> Delete
             </a>
             <a
-              className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-              onClick={() => {
-                onDelete(task.id);
-                setShowMenu(false);
-              }}
-            >
-              <View size={14} /> View
-            </a>
+            className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            onClick={() => {
+              onCardClick?.(task);
+              setShowMenu(false);
+            }}
+          >
+            <View size={14} /> View
+          </a>
+
 
 
           </div>
